@@ -4,9 +4,10 @@
 char *SERVERIP = (char *)"127.0.0.1";
 
 // 포트: 9000
-// 버퍼 크기: 512
+// 버퍼 크기: 10000
 #define SERVERPORT 9000
-#define BUFSIZE    512
+#define BUFSIZE    10000
+#define FILECOUNT  10
 
 int main(int argc, char *argv[])
 {
@@ -43,11 +44,20 @@ int main(int argc, char *argv[])
 	// len: buf의 길이
 	int len;
 
+    // File List
+    char fileNames[FILECOUNT][30] = {"novel.txt", "anthem.txt", "computer_network.txt"};
+
 	// 서버와 데이터 통신
 	// 서버에 데이터 전송
 	while (1) {
 		// 데이터 입력
-		printf("\n[보낼 데이터] ");
+		printf("\n[보낼 데이터] (request \"FILENAME\")\n");
+        printf("<File List>\n");
+        for(int i = 0; i < FILECOUNT; i++) {
+            if (fileNames[i][0] == '\0') continue;
+            printf("- %s\n", fileNames[i]);
+        }
+        printf("=> ");
 		// 입력 실패 or EOF 도달 시 fgets => NULL
 		if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
 			break;
@@ -70,6 +80,13 @@ int main(int argc, char *argv[])
 		}
 		printf("[UDP 클라이언트] %d바이트를 보냈습니다.\n", retval);
 
+        char fileName[BUFSIZE];
+        if (sscanf(buf, "request \"%[^\"]\"", fileName) != 1) {
+            printf("Format: request \"FILENAME\"\n");
+            continue;
+        }
+		printf("FILENAME: %s\n", fileName);
+
 		// 데이터 받기
 		addrlen = sizeof(peeraddr);
 		retval = recvfrom(sock, buf, BUFSIZE, 0,
@@ -89,7 +106,9 @@ int main(int argc, char *argv[])
 		// 받은 데이터 출력
 		buf[retval] = '\0';
 		printf("[UDP 클라이언트] %d바이트를 받았습니다.\n", retval);
-		printf("[받은 데이터] %s\n", buf);
+		printf("[받은 데이터]\n");
+        printf("%s\n", buf);
+        printf("\nThe client received \"%s\" from the server.\n", fileName);
 	}
 
 	// 소켓 닫기

@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 	socklen_t addrlen;
     // 데이터 저장
 	char buf[BUFSIZE + 1];
+    char fileName[BUFSIZE];
 
 	// 클라이언트와 데이터 통신
     // 수신하는 동안 무한루프
@@ -52,6 +53,7 @@ int main(int argc, char *argv[])
 			err_display("recvfrom()");
 			break;
 		}
+		printf("=================================================\n");
 
 		// 받은 데이터 출력
 		buf[retval] = '\0';
@@ -60,14 +62,60 @@ int main(int argc, char *argv[])
         // [UDP/주소:포트] 메시지
 		printf("[UDP/%s:%d] %s\n", addr, ntohs(clientaddr.sin_port), buf);
 
-		// 데이터 보내기
-		retval = sendto(sock, buf, retval, 0,
-			(struct sockaddr *)&clientaddr, sizeof(clientaddr));
-        // 전송에 실패한 경우
+        // 요청된 파일 이름 추출
+        if (sscanf(buf, "request \"%[^\"]\"", fileName) != 1) {
+            printf("Format: request \"FILENAME\"\n");
+			printf("=================================================\n");
+            continue;
+        }
+		printf("- The server received a request from a client\n");
+		printf("FILENAME: %s\n", fileName);
+
+		char *contents = NULL;
+		long fileSize;
+		size_t result;
+
+        // 파일 열기
+        FILE *fp = fopen(fileName, "r");
+        if (fp == NULL) {
+            err_display("fopen()");
+            break;
+        }
+
+		// 파일 크기 계산
+		fseek(fp, 0, SEEK_END);
+		fileSize = ftell(fp);
+		rewind(fp);
+
+		// 파일 크기에 맞게 메모리 할당
+		contents = (char *)malloc(fileSize * sizeof(char));
+		if (contents == NULL) {
+			perror("Failed. (contents == NULL)");
+			fclose(fp);
+			return 1;
+		}
+
+    	// 파일 내용 읽기
+		result = fread(contents, 1, fileSize, fp);
+		if (result != fileSize) {
+			perror("Failed. (result != fileSize)");
+			free(contents);
+			fclose(fp);
+			return 1;
+		}
+
+		retval = sendto(sock, contents, sizeof(char) * fileSize, 0, (struct sockaddr *)&clientaddr, sizeof(clientaddr));
+		// 전송에 실패한 경우
 		if (retval == SOCKET_ERROR) {
 			err_display("sendto()");
 			break;
 		}
+		printf("- The server sent \"%s\" to the client\n", fileName);
+		printf("=================================================\n");
+
+		// 메모리와 파일 닫기
+		free(contents);
+		fclose(fp);
 	}
 
 	// 소켓 닫기
