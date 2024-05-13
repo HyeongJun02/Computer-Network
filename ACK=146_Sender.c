@@ -34,6 +34,8 @@ char last_ACK[BUFSIZE];
 
 int receive_arrow = 0;
 
+int pre_receive = 0;
+
 // 서버로부터 메시지를 수신하는 함수
 void *receive_func(void *arg) {
     ThreadArgs *args = (ThreadArgs *)arg; // 스레드 인수 추출
@@ -50,13 +52,12 @@ void *receive_func(void *arg) {
             err_display("recv()");
             break;
         } else if (retval == 0) {
-            // printf("- Server: This host left this chatting room.\n");
             break;
         }
 
         // 받은 데이터 출력
         buf[retval] = '\0';
-        // printf("[TCP 클라이언트] %d바이트를 받았습니다.\n", retval);
+        // printf("[TCP Sender] %d바이트를 받았습니다.\n", retval);
         printf("(%s) is received.\n", buf);
         // break;
         // if (strcmp(correct_ACK, buf) == 0) {
@@ -65,10 +66,29 @@ void *receive_func(void *arg) {
 
         // =======================================================================================
         strcpy(last_ACK, buf);
-        if (correct_ACK[receive_arrow + 1] == buf) {
+        if (strcmp(correct_ACK[receive_arrow + 1], buf) == 0) {
+            isReceived[receive_arrow] = true;
             receive_arrow++;
+            pre_receive = receive_arrow + 1;
             break;
         }
+        else {
+            isReceived[pre_receive] = true;
+            pre_receive++;
+        }
+        // printf("\n");
+        // printf("[isReceived]");
+        // printf("[%d %d %d %d %d]\n\n", isReceived[0], isReceived[1], isReceived[2], isReceived[3], isReceived[4]);
+    }
+
+    int check_i = 0;
+    while (1) {
+        if (!isReceived[check_i]) {
+            check_i = 0;
+            continue;
+        }
+        check_i++;
+        if (check_i == SIZE) break;
     }
 
     close(sock);
@@ -96,7 +116,7 @@ void *send_func(void *arg) {
 
     while (!isReceived[index]) {
         while (arrow != index);
-        printf("%d is run\n", arrow);
+        // printf("%d is run\n", arrow);
         arrow++;
 
         memset(buf, 0, sizeof(buf));
@@ -133,7 +153,17 @@ void *send_func(void *arg) {
         }
     }
 
-    printf("[Thread %d is done]\n", index);
+    // printf("[Thread %d is done]\n", index);
+
+    int check_i = 0;
+    while (1) {
+        if (!isReceived[check_i]) {
+            check_i = 0;
+            continue;
+        }
+        check_i++;
+        if (check_i == SIZE) break;
+    }
 
     close(sock);
     pthread_exit(NULL);
@@ -173,7 +203,7 @@ int main(int argc, char *argv[]) {
     // 서버로부터 메시지를 수신하는 스레드 생성
     for (int i = 0; i < SIZE; i++) {
         if (pthread_create(&r_tid[i], NULL, receive_func, (void *)&r_args[i]) != 0) {
-            printf("[TCP 클라이언트] 수신 스레드 생성 실패\n");
+            printf("[TCP Sender] 수신 스레드 생성 실패\n");
             close(sock);
             exit(1);
         }
@@ -184,7 +214,7 @@ int main(int argc, char *argv[]) {
     // 서버로 메시지를 보내는 스레드 생성
     for (int i = 0; i < SIZE; i++) {
         if (pthread_create(&s_tid[i], NULL, send_func, (void *)&s_args[i]) != 0) {
-            printf("[TCP 클라이언트] 전송 스레드 생성 실패\n");
+            printf("[TCP Sender] 전송 스레드 생성 실패\n");
             close(sock);
             exit(1);
         }

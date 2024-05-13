@@ -45,12 +45,12 @@ void *receive_func(void *arg) {
             err_display("recv()");
             break;
         } else if (retval == 0) {
-            printf("[TCP 서버] 클라이언트와의 연결 종료\n");
+            printf("[TCP Receiver %d] END\n", index);
             break;
         }
 
-        printf("\nData Received.\n");
-        printf("[DATA]: %s\n", buf);
+        // printf("\nData Received.\n");
+        // printf("[DATA]: %s\n", buf);
 
         // packet 부분을 추출하여 저장
         for (int i = 0; i < 8; ++i) {
@@ -84,9 +84,9 @@ void *receive_func(void *arg) {
         }
 
         if (strcmp(packet, packets[arrow]) != 0) {
-            printf("[Something Wrong!]\n");
-            printf("[packet: %s]\n", packet);
-            printf("[packet[%d]: %s]\n", arrow, packets[arrow]);
+            // printf("[Something Wrong!]\n");
+            // printf("[packet: %s]\n", packet);
+            // printf("[packet[%d]: %s]\n", arrow, packets[arrow]);
             something_wrong = true;
         }
         else {
@@ -124,11 +124,11 @@ void *send_func(void *arg) {
         
         char save_message[BUFSIZE];
         strcpy(save_message, message);
-        printf("\n\n====================================== CLEAR ======================================\n\n");
+        // printf("\n\n====================================== CLEAR ======================================\n\n");
         memset(packet, 0, sizeof(packet));
         memset(message, 0, sizeof(message));
-        printf("packet: %s\n", packet);
-        printf("message: %s\n", message);
+        // printf("packet: %s\n", packet);
+        // printf("message: %s\n", message);
 
         char send_message[BUFSIZE] = "ACK = ";
         if (!something_wrong) {
@@ -141,7 +141,7 @@ void *send_func(void *arg) {
         // printf("\n\n[%d is run!]\n\n", index);
         send_flag[index] = false;
         
-        printf("\nstrlen(save_message) : %ld\n", strlen(save_message));
+        // printf("\nstrlen(save_message) : %ld\n", strlen(save_message));
         sprintf(send_message + strlen(send_message), "%ld", ACK_num);
         strcpy(ACK, send_message);
         strcpy(buf, ACK);
@@ -204,19 +204,19 @@ int main(int argc, char *argv[]) {
     // 클라이언트로부터 메시지를 수신하는 스레드 생성
     for (int i = 0; i < SIZE; i++) {
         if (pthread_create(&r_tid[i], NULL, receive_func, (void *)&r_args[i]) != 0) {
-            printf("[TCP 서버] 수신 스레드 생성 실패\n");
+            printf("[TCP Receiver] 수신 스레드 생성 실패\n");
             close(client_sock);
         }
-        printf("[Receiver Thread Create %d]\n", i);
+        // printf("[Receiver Thread Create %d]\n", i);
     }
 
     // 클라이언트로 메시지를 보내는 스레드 생성
     for (int i = 0; i < SIZE; i++) {
         if (pthread_create(&s_tid[i], NULL, send_func, (void *)&r_args[i]) != 0) {
-            printf("[TCP 서버] 전송 스레드 생성 실패\n");
+            printf("[TCP Receiver] 전송 스레드 생성 실패\n");
             close(client_sock);
         }
-        printf("[Sender Thread Create %d]\n", i);
+        // printf("[Sender Thread Create %d]\n", i);
     }
 
     for (int i = 0; i < SIZE; i++) {
