@@ -21,7 +21,7 @@ typedef struct {
 // 패킷에 저장될 데이터들
 typedef struct {
     char payload[PAYLOAD_SIZE];
-    char checksum;
+    short int checksum;
     char packet_number;
 } Packet;
 Packet packet[32];
@@ -88,13 +88,17 @@ void *receive_func(void *arg) {
 
         usleep(100000);  // 0.1초 지연
 
+        // printf("(int)strlen(buf_save) + (int)strlen(packet[%d].payload) : %d\n", index, (int)strlen(buf_save) + (int)strlen(packet[index].payload));
         if ((int)strlen(buf_save) + (int)strlen(packet[index].payload) >= BUFSIZE) {
             buf_overflow = true;
         }
         else {
             strcat(buf_save, packet[index].payload);
         }
-        buf_size = (int)sizeof(packet[index]);
+        buf_size = 0;
+        buf_size += (int)sizeof(packet[index].payload);
+        buf_size += (int)sizeof(packet[index].checksum);
+        buf_size += (int)sizeof(packet[index].packet_number);
 
         printf("packet %2d is received and there is no error. (%s)\n", packet[index].packet_number, packet[index].payload);
         send_flag[receive_index] = true;
@@ -120,6 +124,10 @@ void *send_func(void *arg) {
 
         if (!buf_overflow) {
             ACK += buf_size;
+            // ACK += (int)sizeof(Packet);
+            // printf("sizeof(Packet.payload) = %d\n", (int)sizeof(packet[index].payload));
+            // printf("sizeof(Packet.checksum) = %d\n", (int)sizeof(packet[index].checksum));
+            // printf("sizeof(Packet.packet_number) = %d\n", (int)sizeof(packet[index].packet_number));
         }
         sprintf(buf, "(ACK = %d)", ACK);
 
@@ -190,6 +198,8 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < SIZE; i++) {
         pthread_join(s_tid[i], NULL);
     }
+
+    printf("\n[Buf Save]\n%s\n", buf_save);
 
     // 소켓 닫기
     close(listen_sock);

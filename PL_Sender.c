@@ -23,7 +23,7 @@ typedef struct {
 
 typedef struct {
     char payload[PAYLOAD_SIZE];
-    char checksum;
+    short int checksum;
     char packet_number;
 } Packet;
 Packet packet[32];
@@ -120,7 +120,6 @@ void *receive_func(void *arg) {
 
 // ================================================================================= SEND FUNC =================================================================================
 void *send_func(void *arg) {
-    // usleep(50000); // 0.05초 지연
     ThreadArgs *args = (ThreadArgs *)arg; // thread arg
     int index = args->index;
     SOCKET sock = args->sock;
@@ -134,7 +133,6 @@ void *send_func(void *arg) {
 
         // printf("buf: %s\n", buf.payload);
 
-        // usleep(50000);  // 0.05초 지연
         retval = send(sock, &buf, sizeof(Packet), 0); // Packet 구조체의 크기만큼 전송
         // printf("retval: %d\n", retval);
         if (retval == SOCKET_ERROR) {

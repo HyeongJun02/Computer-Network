@@ -1,86 +1,84 @@
 packet  0 is transmitted. (예절)
 packet  1 is transmitted. (바른)
-(ACK = 8) is received.
-(ACK = 16) is received.
 packet  2 is transmitted. ( 그)
+(ACK = 9) is received.
 packet  3 is transmitted. (가 )
 packet  4 is transmitted. (식당)
-(ACK = 24) is received.
+(ACK = 18) is received.
+(ACK = 27) is received.
+(ACK = 36) is received.
 packet  5 is transmitted. (에서)
-(ACK = 32) is received.
+(ACK = 45) is received.
 packet  6 is transmitted. ( 엄)
-(ACK = 40) is received.
+(ACK = 54) is received.
 packet  7 is transmitted. (마의)
-(ACK = 48) is received.
+(ACK = 63) is received.
 packet  8 is transmitted. ( 상)
+(ACK = 72) is received.
 packet  9 is transmitted. (대를)
-(ACK = 56) is received.
+(ACK = 81) is received.
 packet 10 is transmitted. ( 하)
-(ACK = 64) is received.
+(ACK = 81) is received and ignored.
 packet 11 is transmitted. (고 )
-(ACK = 64)(ACK = 64) is received and ignored.
 packet 12 is transmitted. (있을)
+(ACK = 81) is received and ignored.
+(ACK = 81) is received and ignored.
 packet 13 is transmitted. ( 동)
-(ACK = 64) is received and ignored.
 packet 14 is transmitted. (안 )
-(ACK = 64)(ACK = 64) is received and ignored.
+(ACK = 81) is received and ignored.
+(ACK = 81) is received and ignored.
 packet 15 is transmitted. (나는)
-packet 16 is transmitted. ( 멍)
-packet  7 is timeout.
-(ACK = 64) is received and ignored.
-packet 17 is transmitted. (하니)
-(ACK = 64) is received and ignored.
-packet  8 is timeout.
-(ACK = 64) is received and ignored.
-packet 18 is transmitted. ( 창)
 packet  9 is timeout.
-packet 19 is transmitted. (가에)
-(ACK = 64) is received and ignored.
-(ACK = 64) is received and ignored.
-packet 20 is transmitted. ( 앉)
+(ACK = 81) is received and ignored.
+packet 16 is transmitted. ( 멍)
+packet 17 is transmitted. (하니)
 packet 10 is timeout.
-(ACK = 64) is received and ignored.
-(ACK = 64) is received and ignored.
-packet 21 is transmitted. (아서)
-packet 12 is timeout.
-packet 22 is transmitted. ( 저)
 packet 11 is timeout.
-(ACK = 64) is received and ignored.
-packet 23 is transmitted. (물어)
+(ACK = 81) is received and ignored.
+(ACK = 81) is received and ignored.
+packet 18 is transmitted. ( 창)
+packet 12 is timeout.
+packet 19 is transmitted. (가에)
 packet 13 is timeout.
-(ACK = 64) is received and ignored.
-packet 24 is transmitted. ( 가)
+(ACK = 81) is received and ignored.
+packet 20 is transmitted. ( 앉)
 packet 14 is timeout.
-(ACK = 64) is received and ignored.
-packet 25 is transmitted. (는 )
-(ACK = 64) is received and ignored.
-packet 26 is transmitted. (하늘)
-(ACK = 64) is received and ignored.
+(ACK = 81) is received and ignored.
+packet 21 is transmitted. (아서)
+(ACK = 81) is received and ignored.
 packet 15 is timeout.
+(ACK = 81) is received and ignored.
+packet 22 is transmitted. ( 저)
+(ACK = 81) is received and ignored.
 packet 16 is timeout.
+packet 23 is transmitted. (물어)
+(ACK = 81) is received and ignored.
 packet 17 is timeout.
-(ACK = 64) is received and ignored.
-packet 27 is transmitted. (을 )
-(ACK = 64) is received and ignored.
-packet 28 is transmitted. (바라)
+(ACK = 81) is received and ignored.
+packet 24 is transmitted. ( 가)
 packet 18 is timeout.
+packet 25 is transmitted. (는 )
+(ACK = 81) is received and ignored.
 packet 19 is timeout.
-packet 29 is transmitted. (다보)
-(ACK = 64) is received and ignored.
+packet 26 is transmitted. (하늘)
+(ACK = 81) is received and ignored.
 packet 20 is timeout.
-packet 30 is transmitted. (고 )
-(ACK = 64) is received and ignored.
+packet 27 is transmitted. (을 )
 packet 21 is timeout.
-packet 31 is transmitted. (있다)
-(ACK = 64) is received and ignored.
-(ACK = 64) is received and ignored.
+(ACK = 81) is received and ignored.
+packet 28 is transmitted. (바라)
 packet 22 is timeout.
-(ACK = 64) is received and ignored.
- is received.
- is received and ignored.
+packet 29 is transmitted. (다보)
+(ACK = 81) is received and ignored.
 packet 23 is timeout.
+(ACK = 81) is received and ignored.
+packet 30 is transmitted. (고 )
+(ACK = 81) is received and ignored.
 packet 24 is timeout.
+packet 31 is transmitted. (있다)
+(ACK = 81) is received and ignored.
 packet 25 is timeout.
+(ACK = 81) is received and ignored.
 packet 26 is timeout.
 packet 27 is timeout.
 packet 28 is timeout.
