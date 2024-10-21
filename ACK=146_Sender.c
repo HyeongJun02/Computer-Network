@@ -1,6 +1,3 @@
-// 2142851 컴퓨터공학과 김형준
-// FR_Sender.c
-
 #include "../Common.h"
 #include <pthread.h>
 
@@ -10,7 +7,6 @@
 #define SIZE 5
 
 bool isReceived[SIZE] = { false, false, false, false, false };
-bool sender_something_wrong[SIZE] = { false, false, false, false, false };
 
 int arrow = 0;
 
@@ -42,7 +38,7 @@ int pre_receive = 0;
 
 // 서버로부터 메시지를 수신하는 함수
 void *receive_func(void *arg) {
-    ThreadArgs *args = (ThreadArgs *)arg; // thread arg
+    ThreadArgs *args = (ThreadArgs *)arg; // 스레드 인수 추출
     int index = args->index;
     SOCKET sock = args->sock;
 
@@ -78,7 +74,6 @@ void *receive_func(void *arg) {
         }
         else {
             isReceived[pre_receive] = true;
-            sender_something_wrong[receive_arrow] = true;
             pre_receive++;
         }
         // printf("\n");
@@ -109,11 +104,9 @@ bool first_packet1 = true;
 
 // 서버로 메시지를 보내는 함수
 void *send_func(void *arg) {
-    ThreadArgs *args = (ThreadArgs *)arg; // thread arg
+    ThreadArgs *args = (ThreadArgs *)arg; // 스레드 인수 추출
     int index = args->index;
     SOCKET sock = args->sock;
-
-    bool is_retransmittion = false;
     
     // 0.5 * index second delay
     usleep(500000 * index);
@@ -145,41 +138,19 @@ void *send_func(void *arg) {
             err_display("send()");
             break;
         }
-
-        char send_message[BUFSIZE];
-
-        memcpy(send_message, buf + 9, strlen(buf) - 9 + 1);
-        
-        if (is_retransmittion) {
-            printf("packet %d is retransmitted. (%s)\n", index, send_message);
-        }
-        else {
-            printf("packet %d is transmitted. (%s)\n", index, send_message);
-        }
+        printf("packet %d is transmitted. (%s)\n", index, packets[index]);
         startTime[index] = clock();
 
         while (!isReceived[index]) {
             endTime[index] = clock();
             elapsedTime[index] = (double)(endTime[index] - startTime[index]) / CLOCKS_PER_SEC;
-
-            // ACK wrong
-            if (sender_something_wrong[index]) {
-                // printf("sender_something_wrong[%d]: true\n", index);
-                // 3 second delay
-                usleep(3000000);
-                sender_something_wrong[index] = false;
-                arrow = index;
-                break;
-            }
-
-            // 전송 후 10초가 지나면 time out
+            // 전송 후 10초가 지나면 타임아웃
             if (elapsedTime[index] > 10) {
                 printf("packet %d Time out\n", index);
                 arrow = index;
                 break;
             }
         }
-        is_retransmittion = true;
     }
 
     // printf("[Thread %d is done]\n", index);

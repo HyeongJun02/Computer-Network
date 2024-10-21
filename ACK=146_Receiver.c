@@ -1,6 +1,3 @@
-// 2142851 컴퓨터공학과 김형준
-// FR_Receiver.c
-
 #include "../Common.h"
 #include <pthread.h>
 #include <string.h>
@@ -30,24 +27,9 @@ char message[BUFSIZE];
 bool something_wrong = false;
 bool first_packet_loss = true;
 
-// return message length
-int message_length(const char *packet) {
-    const char *a = strchr(packet, ':');
-    if (a == NULL) {
-        return 0;
-    }
-    return strlen(a + 1);
-}
-
-// checksum
-int checksum_func(const char *packet) {
-    int length = message_length(packet);
-    return length;
-}
-
 // 클라이언트로부터 메시지를 수신하는 함수
 void *receive_func(void *arg) {
-    ThreadArgs *args = (ThreadArgs *)arg; // thread arg
+    ThreadArgs *args = (ThreadArgs *)arg; // 스레드 인수 추출
     int index = args->index;
     SOCKET client_sock = args->sock;
     // int client_sock = *((int *)arg);
@@ -56,7 +38,6 @@ void *receive_func(void *arg) {
     int retval;
 
     while (1) {
-        bool checksum_result;
         // 데이터 받기
         memset(buf, 0, sizeof(buf));
         retval = recv(client_sock, buf, BUFSIZE, 0);
@@ -68,9 +49,6 @@ void *receive_func(void *arg) {
             break;
         }
 
-        // checksum
-        int checksum = checksum_func(buf);
-        
         // printf("\nData Received.\n");
         // printf("[DATA]: %s\n", buf);
 
@@ -78,14 +56,14 @@ void *receive_func(void *arg) {
         for (int i = 0; i < 8; ++i) {
             packet[i] = buf[i];
         }
-        packet[8] = '\0';
+        packet[8] = '\0'; // 문자열 끝을 표시하는 널 문자 추가
 
         // message 부분을 추출하여 저장
         int j = 0;
         for (int i = 9; i < strlen(buf); ++i) {
             message[j++] = buf[i];
         }
-        message[j] = '\0';
+        message[j] = '\0'; // 문자열 끝을 표시하는 널 문자 추가
 
         // printf("[reciever %d]\n", index);
         // printf("[packet: %s]\n", packet);
@@ -116,16 +94,9 @@ void *receive_func(void *arg) {
             arrow++;
         }
 
-        // checksum
-        if (checksum == strlen(message)) {
-            printf("%s is received and there is no error. (%s) ", packet, message);
-        }
-        else {
-            printf("%s is received and there is an error. (%s) ", packet, message);
-        }
+        printf("%s is received and there is no error. (%s) ", packet, message);
 
         send_flag[n] = true;
-        is_end[n] = true;
         // printf("\nsend_flag %d true\n", n);
         // printf("[TCP 서버] %d바이트를 받았습니다.\n", retval);// 받은 데이터 출력
         // printf("- Client: %s\n", buf);
@@ -138,7 +109,7 @@ void *receive_func(void *arg) {
 
 // 클라이언트로 메시지를 보내는 함수
 void *send_func(void *arg) {
-    ThreadArgs *args = (ThreadArgs *)arg; // thread arg
+    ThreadArgs *args = (ThreadArgs *)arg; // 스레드 인수 추출
     int index = args->index;
     SOCKET client_sock = args->sock;
     // int client_sock = *((int *)arg);
@@ -164,6 +135,8 @@ void *send_func(void *arg) {
             ACK_num += strlen(save_message);
         }
 
+        // 5 second
+        usleep(5000000);
         something_wrong = false;
         // printf("\n\n[%d is run!]\n\n", index);
         send_flag[index] = false;
@@ -174,9 +147,6 @@ void *send_func(void *arg) {
         strcpy(buf, ACK);
 
         printf("(%s) is transmitted.\n", buf);
-
-        // 5 second
-        usleep(5000000);
 
         int len = (int)strlen(buf);
         if (buf[len - 1] == '\n')
